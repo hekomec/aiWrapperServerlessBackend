@@ -1,0 +1,39 @@
+service: aiWrapper
+
+frameworkVersion: "3"
+
+useDotenv: true
+provider:
+  name: aws
+  versionFunctions: false
+  runtime: nodejs16.x
+  profile: default
+  region: eu-west-3
+  environment:
+    OPEN_AI_KEY: ${env:OPEN_AI_KEY}
+functions:
+  wrapper:
+    handler: src/aiWrapper/index.handler
+    name: aiWrapper
+    events:
+      - httpApi:
+          method: POST
+          path: /aiWrapper
+
+plugins:
+  - serverless-offline
+  - serverless-prune-plugin
+  - serverless-esbuild
+custom:
+  null_var: null
+  serverless-offline:
+    httpPort: ${env:PORT, 4000}
+    host: ${env:HOST, 'localhost'}
+    ignoreJWTSignature: true
+    useChildProcesses: true
+  prune:
+    automatic: true
+    number: 5
+  esbuild:
+    bundle: true
+    minify: false
